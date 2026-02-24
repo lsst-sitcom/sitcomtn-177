@@ -42,7 +42,10 @@ this document summarizes the methodology and findings.
 Analysis overview
 -----------------
 
-The notebook proceeds through seven main stages:
+The notebook proceeds through the following stages:
+
+Data acquisition and covariance construction
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. **Data collection** — LSSTCam corner wavefront sensor Zernike coefficients
    (Z4--Z26, four corners: R00/R40/R04/R44) are fetched from the Butler and
@@ -62,6 +65,9 @@ The notebook proceeds through seven main stages:
    permuted from the historical build order [R00, R40, R04, R44] to the
    ``ts_ofc`` canonical order [R00, R04, R40, R44].
 
+Initial state estimation comparison
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 5. **State estimation comparison** — ``StateEstimator.dof_state()`` is run
    under three noise-covariance regimes (no covariance, simulated ``covM``,
    and measured ``C_new``) and the resulting DOF distributions are compared
@@ -74,6 +80,50 @@ The notebook proceeds through seven main stages:
 7. **Variance comparison** — Per-corner, per-Zernike diagonal variance is
    compared between the simulated covariance (nm²) and the measured
    covariance (µm² converted to nm²).
+
+Correlation structure by observing conditions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+8. **Clipped Zernike correlation matrix analysis** — The measured correlation
+   matrix is recomputed after binning by donut blur (≤1.0, 1.0--1.25,
+   1.25--1.5, >1.5 arcsec) and optionally altitude, to assess how correlation
+   structure changes with observing conditions.
+
+9. **Pseudo-diagonal corner-to-corner correlations** — Same-Zernike
+   correlations across different corners (block-diagonals of the 4×4 corner
+   correlation blocks) are extracted and compared across blur bins using
+   distributions, heatmaps, and mode-resolved line plots.
+
+Corner-order sensitivity and DOF diagnostics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+10. **SimCov corner-order sensitivity** — Tests whether using the wrong corner
+    packing assumption (historical vs canonical) affects state estimates.
+
+11. **DOFs corner plots** — Grid of scatter plots comparing per-DOF state
+    estimates under four regimes: MeasuredCov, SimCov (canonical packing),
+    SimCov (historical packing), and Cov=False.
+
+12. **Baseline-vs-method triangle plot** — A triangular diagnostic grid with
+    Cov=False on the x-axis and each method on the y-axis, used to identify
+    cross-talk or mixing between DOFs relative to the baseline.
+
+Environment-clipped covariance analysis
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+13. **Clipping the covariance matrix** — Environment-clipped covariance
+    matrices are built by blur bin and altitude window, remapped to the
+    Z4--Z28 basis, canonicalized to ``ts_ofc`` corner order, and visualized
+    side-by-side with the unclipped reference.
+
+14. **DOF state estimation with environment-clipped covariance** — Tests
+    whether the estimated DOF states change when using a clipped covariance
+    (e.g., good-seeing subset) instead of the full unclipped covariance.
+
+15. **Corner-style overlay plot** — All covariance variants (Cov=False,
+    unclipped, good-binning aggregate, per-blur-bin) are overlaid with
+    distinct colors and markers to compare DOF distributions in a single
+    figure.
 
 Known issues and caveats
 ------------------------
@@ -96,7 +146,7 @@ canonicalized later.  However, any downstream consumer of the exported YAML
 (e.g., ``ts_ofc`` or ``ts_mtaos``) that assumes the canonical corner order
 would see the R04 and R40 blocks swapped.
 
-**Recommendation:** Either move the YAML export after the canonicalization
+**Pending:** Either move the YAML export after the canonicalization
 cell, or explicitly permute before writing and document the corner order in
 the YAML header.
 
