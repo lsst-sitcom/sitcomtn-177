@@ -4,6 +4,7 @@ _build/
 .tox/
 venv/
 .venv/
+.pptx 
 
 # SCons build artifacts
 .sconsign.dblite
