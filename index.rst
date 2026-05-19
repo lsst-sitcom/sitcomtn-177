@@ -28,6 +28,13 @@ Covariance Estimation for AOS Closed-Loop OFC
 
 .. include:: chapters/06_clipped_covariance.rst
 
+Related documentation
+=====================
+
+For a detailed mathematical description of the OFC control loop, v-modes, and
+PID control, see `SOTN-001: OFC Control Loop Mathematical Description
+<https://sotn-001.lsst.io>`_.
+
 Known issues and caveats
 ========================
 
