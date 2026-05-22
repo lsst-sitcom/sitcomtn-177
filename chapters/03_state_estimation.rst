@@ -16,9 +16,23 @@ Three covariance configurations are compared:
 
 - **Cov=False**: No noise covariance (uniform weighting, equivalent to
   ordinary least squares)
-- **SimCov**: The pre-existing simulated covariance matrix from
-  ``ts_config_mttcs``
+- **SimCov**: A simulated covariance matrix derived from end-to-end
+  wavefront sensing simulations
 - **MeasuredCov**: The newly measured covariance from on-sky stability data
+
+Simulated Covariance Matrix
+---------------------------
+
+The simulated covariance matrix (SimCov) was generated from wavefront sensing
+simulations described in :cite:`2024SPIE13103E..1WX` (Xin et al. 2024).  These
+simulations model the complete wavefront sensing pipeline, including
+atmospheric turbulence, optical aberrations, and the donut-based wavefront
+estimation algorithm.
+
+The simulated covariance is dominated by atmospheric contributions, which
+introduce correlated noise across Zernike modes and corner sensors.  This
+matrix represents the expected measurement uncertainty under typical observing
+conditions as predicted by the simulation framework.
 
 Simulated vs Measured Covariance
 --------------------------------
@@ -31,9 +45,11 @@ themselves.
    :width: 100%
 
    Side-by-side comparison of simulated and measured covariance matrices.
-   The simulated matrix is smoother (derived from optical models), while
-   the measured matrix captures actual on-sky correlations including
-   atmospheric and instrumental effects.
+   The simulated matrix (left) is derived from end-to-end wavefront sensing
+   simulations and is dominated by atmospheric effects.  The measured matrix
+   (right) captures actual on-sky correlations including atmospheric,
+   instrumental, and environmental effects not fully represented in the
+   simulation.
 
 DOF State Distributions
 -----------------------
