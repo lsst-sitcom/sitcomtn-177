@@ -43,15 +43,46 @@ independently.
 Covariance Matrix Construction
 ------------------------------
 
-The covariance matrix is computed from the detrended Zernike vectors
-(92 elements: 23 Zernikes x 4 corners) using ``np.cov``.  Data from all
-stability nights are combined to maximize sample size.
+The noise covariance matrix :math:`\mathbf{C}_n` characterizes the measurement
+uncertainty of the wavefront Zernike coefficients.  It tells the state
+estimator which Zernikes and corners are noisy (large diagonal entries) and
+which are correlated (large off-diagonal entries), enabling appropriate
+down-weighting during state estimation.
+
+Given :math:`N` exposures of detrended Zernike measurements, the sample
+covariance is estimated as:
+
+.. math::
+
+   \hat{\mathbf{C}}_n = \frac{1}{N-1}\sum_{k=1}^{N}
+   (\mathbf{y}_k - \bar{\mathbf{y}})(\mathbf{y}_k - \bar{\mathbf{y}})^T
+
+where :math:`\mathbf{y}_k` is the 92-element Zernike vector (23 Zernikes × 4
+corners) for exposure :math:`k`, and :math:`\bar{\mathbf{y}}` is the sample
+mean across all exposures.
+
+The diagonal elements :math:`[\hat{\mathbf{C}}_n]_{ii}` represent the variance
+of each Zernike coefficient at each corner.  The off-diagonal elements
+:math:`[\hat{\mathbf{C}}_n]_{ij}` capture correlations between different
+Zernikes or different corners — for example, common-mode atmospheric effects
+that affect all corners similarly, or optical aberrations that couple
+specific Zernike modes.
+
+In the notebook, this is computed using ``np.cov(data, rowvar=False)`` on
+the stacked detrended Zernike arrays from all stability nights, maximizing
+the sample size for a robust estimate.
+
+For a detailed mathematical description of how this covariance matrix is used
+in the OFC state estimator, see `SOTN-001: OFC Control Loop Mathematical
+Description <https://sotn-001.lsst.io>`_, Section 2.2.
 
 .. figure:: /_static/04_cumulative_covariance.png
    :alt: Cumulative covariance tracking
    :width: 100%
 
-   Cumulative covariance matrix built from all stability blocks.
+   Cumulative covariance matrix built from all stability blocks.  The block
+   structure reflects the four corner sensors, with each block showing
+   Zernike-to-Zernike correlations within and across corners.
 
 Remapping to the OFC Target Grid
 --------------------------------
